@@ -1,6 +1,6 @@
 {
   "name": "snekshot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "epic screenshots",
   "main": "index.js",
   "bin": "bin.js",
