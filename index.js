@@ -1,10 +1,10 @@
-const child_process = require('child_process');
 const https = require('https');
 const fs = require('fs');
 const crypto = require('crypto');
 const util = require('util');
 const request = require('snekfetch');
 const unlinkAsync = util.promisify(fs.unlink);
+const exec = require('./exec');
 
 async function snekshot({ filename, bucket, key, secret }) {
   await exec(`${getScreenshotCommand()} ${filename}`);
@@ -32,15 +32,6 @@ async function snekshot({ filename, bucket, key, secret }) {
 function signature({ content_type, date, bucket, safe_filename, secret }) {
   const body = `PUT\n\n${content_type}\n${date}\nx-amz-acl:public-read\n/${bucket}/${safe_filename}`;
   return crypto.createHmac('sha1', secret).update(body).digest('base64');
-}
-
-function exec(str) {
-  return new Promise((resolve, reject) => {
-    child_process.exec(str, (err, stdout) => {
-      if (err) reject(err);
-      else resolve(stdout.trim());
-    });
-  });
 }
 
 function getScreenshotCommand() {

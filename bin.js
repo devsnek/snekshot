@@ -7,6 +7,7 @@ const copy = util.promisify(require('copy-paste').copy);
 const notifier = require('node-notifier');
 const snekshot = require('./index');
 const chars = require('./chars');
+const exec = require('./exec');
 
 const snekv = require('snekparse')(process.argv);
 
@@ -32,7 +33,11 @@ snekshot({
       title: 'Snekshot',
       message: final,
     });
-    return copy(final);
+    if (process.platform === 'darwin') {
+      return exec(`echo "${final}" | LANG=en_US.UTF-8 pbcopy`);
+    } else {
+      return copy(final);
+    }
   })
   .then(() => process.exit(0))
   .catch((err) => process.stdout.write(`${err.message}\n`));
