@@ -6,7 +6,7 @@ const util = require('util');
 const copy = util.promisify(require('copy-paste').copy);
 const notifier = require('node-notifier');
 const snekshot = require('./index');
-const chars = require('./chars.json');
+const chars = require('./chars');
 
 const snekv = require('snekparse')(process.argv);
 
