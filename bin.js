@@ -8,7 +8,7 @@ const notifier = require('node-notifier');
 const snekshot = require('./index');
 const chars = require('./chars.json');
 
-const snekv = require('snekparse')(process.arvg);
+const snekv = require('snekparse')(process.argv);
 
 const RC_FILE_PATH = path.join(getOSStoragePath(), '.snekshotrc');
 
