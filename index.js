@@ -3,11 +3,11 @@ const https = require('https');
 const fs = require('fs');
 const crypto = require('crypto');
 const util = require('util');
-const request = require('../snekfetch');
+const request = require('snekfetch');
 const unlinkAsync = util.promisify(fs.unlink);
 
 async function snekshot({ filename, bucket, key, secret }) {
-  await exec(`screencapture -i ${filename}`);
+  await exec(`${getScreenshotCommand()} ${filename}`);
   const date = await exec('date +"%a, %d %b %Y %T %z"');
   const safe_filename = encodeURIComponent(filename);
   const sig = await signature({
@@ -41,6 +41,17 @@ function exec(str) {
       else resolve(stdout.trim());
     });
   });
+}
+
+function getScreenshotCommand() {
+  switch (process.platform) {
+    case 'darwin':
+      return 'screencapture -i';
+    case 'linux':
+      return 'import';
+    default:
+      throw new Error('unsupported platform');
+  }
 }
 
 module.exports = snekshot;

@@ -24,15 +24,18 @@ snekshot({
   filename, bucket,
   key: config.key || snekv.key,
   secret: config.secret || snekv.secret,
-}).then(() => {
-  const final = `${config.endpoint || `https://${bucket}`}/${filename}`;
-  process.stdout.write(final);
-  notifier.notify({
-    title: 'Snekshot',
-    message: final,
-  });
-  return copy(final);
-});
+})
+  .then(() => {
+    const final = `${config.endpoint || `https://${bucket}`}/${filename}`;
+    process.stdout.write(`${final}\n`);
+    notifier.notify({
+      title: 'Snekshot',
+      message: final,
+    });
+    return copy(final);
+  })
+  .then(() => process.exit(0))
+  .catch((err) => process.stdout.write(`${err.message}\n`));
 
 function makeName(length) {
   let name = [];
