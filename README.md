@@ -1,6 +1,13 @@
-## snekshot
+# snekshot
 
-Usage:
+### General Usage:
+
+- `~$ snekshot`
+- `~$ sneklink <some link here>`
+
+---
+
+### API
 
 ```js
 const s = require('snekshot');
