@@ -1,48 +1,35 @@
 const https = require('https');
-const fs = require('fs');
 const crypto = require('crypto');
-const util = require('util');
 const request = require('snekfetch');
-const unlinkAsync = util.promisify(fs.unlink);
 const exec = require('./exec');
 
-async function snekshot({ filename, bucket, key, secret }) {
-  await exec(`${getScreenshotCommand()} ${filename}`);
+async function upload({ filename, file, secret, bucket, key, redirect }) {
   const date = await exec('date +"%a, %d %b %Y %T %z"');
   const safe_filename = encodeURIComponent(filename);
   const sig = await signature({
     content_type: 'image/png',
-    date, bucket, safe_filename, secret,
+    date, bucket, safe_filename, secret, redirect,
   });
+  const headers = {
+    Host: `${bucket}.s3.amazonaws.com`,
+    Date: date,
+    Authorization: `AWS ${key}:${sig}`,
+    'Content-Type': 'image/png',
+    'x-amz-acl': 'public-read',
+  };
+  if (redirect) headers['x-amz-website-redirect-location'] = redirect;
   return request.put(`https://${bucket}.s3.amazonaws.com/${safe_filename}`, {
     agent: new https.Agent({ rejectUnauthorized: false }),
   })
-    .set({
-      Host: `${bucket}.s3.amazonaws.com`,
-      Date: date,
-      Authorization: `AWS ${key}:${sig}`,
-      'Content-Type': 'image/png',
-      'x-amz-acl': 'public-read',
-    })
-    .send(fs.readFileSync(filename))
-    .then(() => unlinkAsync(filename))
-    .then(() => filename);
+    .set(headers)
+    .send(file)
+    .then((r) => r.body);
 }
 
-function signature({ content_type, date, bucket, safe_filename, secret }) {
-  const body = `PUT\n\n${content_type}\n${date}\nx-amz-acl:public-read\n/${bucket}/${safe_filename}`;
-  return crypto.createHmac('sha1', secret).update(body).digest('base64');
+function signature({ content_type, date, bucket, safe_filename, secret, redirect }) {
+  let body = `PUT\n\n${content_type}\n${date}\nx-amz-acl:public-read`;
+  if (redirect) body = `${body}\nx-amz-website-redirect-location:${redirect}`;
+  return crypto.createHmac('sha1', secret).update(`${body}\n/${bucket}/${safe_filename}`).digest('base64');
 }
 
-function getScreenshotCommand() {
-  switch (process.platform) {
-    case 'darwin':
-      return 'screencapture -i';
-    case 'linux':
-      return 'import';
-    default:
-      throw new Error('unsupported platform');
-  }
-}
-
-module.exports = snekshot;
+module.exports = upload;
