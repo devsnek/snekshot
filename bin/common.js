@@ -32,11 +32,11 @@ function run({ filename, file, redirect }) {
       const final = `${config.endpoint || `https://${bucket}`}/${filename}`;
       process.stdout.write(`${final}\n`);
       notifier.notify({
-        title: 'Snekshot',
+        title: path.basename(module.parent.filename).split('.')[0],
         message: final,
       });
       if (process.platform === 'darwin') {
-        return exec(`echo "${final}" | LANG=en_US.UTF-8 pbcopy`);
+        return exec(`echo "${final}" | tr -d '\n' | LANG=en_US.UTF-8 pbcopy`);
       } else {
         return copy(final);
       }
