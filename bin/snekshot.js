@@ -13,7 +13,8 @@ common.exec(`${getScreenshotCommand()} ${filename}`)
     filename,
     file: fs.readFileSync(filename),
   }))
-  .then(() => unlinkAsync(filename));
+  .then(() => unlinkAsync(filename))
+  .then(() => process.exit(0));
 
 function getScreenshotCommand() {
   switch (process.platform) {

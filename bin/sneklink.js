@@ -10,4 +10,5 @@ common.run({
   file: Buffer.from(`Redirecting to ${long}`),
   filename,
   redirect: long,
-});
+})
+  .then(() => process.exit(0));

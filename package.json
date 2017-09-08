@@ -1,6 +1,6 @@
 {
   "name": "snekshot",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Use s3 to host your screenshots and shortlinks",
   "main": "index.js",
   "bin": {
