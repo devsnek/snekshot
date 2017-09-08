@@ -41,6 +41,7 @@ function run({ filename, file, redirect }) {
         return copy(final);
       }
     })
+    .then(() => process.exit(0))
     .catch((err) => {
       process.stderr.write(`${err.stack}\n`);
       process.exit(1);
