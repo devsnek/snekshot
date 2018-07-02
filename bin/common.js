@@ -1,13 +1,26 @@
+'use strict';
+
 const path = require('path');
 const fs = require('fs');
 const util = require('util');
 const copy = util.promisify(require('copy-paste').copy);
 const notifier = require('node-notifier');
+const snekv = require('snekparse')(process.argv);
 const upload = require('../');
 const chars = require('./chars');
 const exec = require('../exec');
 
-const snekv = require('snekparse')(process.argv);
+function getOSStoragePath() {
+  switch (process.platform) {
+    case 'win32':
+      return process.env.APPDATA;
+    case 'darwin':
+    case 'linux':
+      return `${process.env.HOME}/.config`;
+    default:
+      return '.';
+  }
+}
 
 const RC_FILE_PATH = path.join(getOSStoragePath(), '.snekshotrc');
 
@@ -17,7 +30,6 @@ try {
 } catch (err) {} // eslint-disable-line no-empty
 
 const bucket = snekv.bucket || config.bucket;
-
 
 function run({ filename, file, redirect }) {
   return upload({
@@ -37,9 +49,8 @@ function run({ filename, file, redirect }) {
       });
       if (process.platform === 'darwin') {
         return exec(`echo "${final}" | tr -d '\n' | LANG=en_US.UTF-8 pbcopy`);
-      } else {
-        return copy(final);
       }
+      return copy(final);
     })
     .catch((err) => {
       process.stderr.write(`${err.stack}\n`);
@@ -48,21 +59,11 @@ function run({ filename, file, redirect }) {
 }
 
 function makeName(length) {
-  let name = [];
-  while (name.length < length) name.push(chars[Math.floor(Math.random() * chars.length)]);
-  return name.join('');
-}
-
-function getOSStoragePath() {
-  switch (process.platform) {
-    case 'win32':
-      return process.env.APPDATA;
-    case 'darwin':
-    case 'linux':
-      return `${process.env.HOME}/.config`;
-    default:
-      return '.';
+  const name = [];
+  while (name.length < length) {
+    name.push(chars[Math.floor(Math.random() * chars.length)]);
   }
+  return name.join('');
 }
 
 module.exports = {

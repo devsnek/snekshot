@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 const common = require('./common');
 
 const filename = common.snekv.filename || `${common.makeName(4)}`;

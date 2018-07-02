@@ -1,3 +1,5 @@
+'use strict';
+
 const chars = new Set();
 const ranges = [
   [0x30, 0x39], // numbers
@@ -10,7 +12,9 @@ const ranges = [
 ];
 
 for (const [x, y] of ranges) {
-  for (let i = x; i < y; i++) chars.add(String.fromCharCode(i));
+  for (let i = x; i < y; i += 1) {
+    chars.add(String.fromCharCode(i));
+  }
 }
 
 module.exports = Array.from(chars);

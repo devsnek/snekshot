@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 
+'use strict';
+
 const fs = require('fs');
-const util = require('util');
-const unlinkAsync = util.promisify(fs.unlink);
+const path = require('path');
+const {
+  promises: {
+    unlink,
+    readdir,
+  },
+} = require('fs');
 
 const common = require('./common');
 
 const filename = common.snekv.filename || `${common.makeName(3)}.png`;
-
-common.exec(`${getScreenshotCommand()} ${filename}`)
-  .then(() => common.run({
-    filename,
-    file: fs.readFileSync(filename),
-  }))
-  .then(() => unlinkAsync(filename))
-  .then(() => process.exit(0));
+const full = path.resolve(filename);
 
 function getScreenshotCommand() {
   switch (process.platform) {
@@ -26,3 +26,15 @@ function getScreenshotCommand() {
       throw new Error('unsupported platform');
   }
 }
+
+common.exec(`${getScreenshotCommand()} ${full}`)
+  .then(() => common.run({
+    filename,
+    file: fs.readFileSync(full),
+  }))
+  .then(async () => {
+    const files = await readdir(path.dirname(full));
+    const name = files.find((n) => n.normalize() === filename.normalize());
+    await unlink(name);
+  })
+  .then(() => process.exit(0));
