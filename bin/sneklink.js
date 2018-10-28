@@ -4,7 +4,7 @@
 
 const common = require('./common');
 
-const filename = common.snekv.filename || `${common.makeName(4)}`;
+const filename = common.snekv.filename || `${common.makeName()}`;
 
 const long = process.argv[2];
 

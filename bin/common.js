@@ -7,7 +7,6 @@ const copy = util.promisify(require('copy-paste').copy);
 const notifier = require('node-notifier');
 const snekv = require('snekparse')(process.argv);
 const upload = require('../');
-const chars = require('./chars');
 const exec = require('../exec');
 
 function getOSStoragePath() {
@@ -58,12 +57,9 @@ function run({ filename, file, redirect }) {
     });
 }
 
-function makeName(length) {
-  const name = [];
-  while (name.length < length) {
-    name.push(chars[Math.floor(Math.random() * chars.length)]);
-  }
-  return name.join('');
+function makeName() {
+  const ms = Date.now() - new Date('2018-07-22T21:29:54.526Z').getTime();
+  return `${Math.floor(ms / 1000)}`;
 }
 
 module.exports = {
