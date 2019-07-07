@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-const fs = require('fs');
 const util = require('util');
 const copy = util.promisify(require('copy-paste').copy);
 const notifier = require('node-notifier');
@@ -25,7 +24,7 @@ const RC_FILE_PATH = path.join(getOSStoragePath(), '.snekshotrc');
 
 let config = {};
 try {
-  config = JSON.parse(fs.readFileSync(RC_FILE_PATH));
+  config = require(RC_FILE_PATH);
 } catch (err) {} // eslint-disable-line no-empty
 
 const bucket = snekv.bucket || config.bucket;
@@ -57,13 +56,8 @@ function run({ filename, file, redirect }) {
     });
 }
 
-function makeName() {
-  const ms = Date.now() - new Date('2018-07-22T21:29:54.526Z').getTime();
-  return `${Math.floor(ms / 1000)}`;
-}
-
 module.exports = {
-  makeName,
+  makeName: config.makeName || (() => Date.now().toString()),
   getOSStoragePath,
   run,
   exec,

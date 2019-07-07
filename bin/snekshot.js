@@ -32,7 +32,7 @@ common.exec(`${getScreenshotCommand()} ${full}`)
     filename,
     file: fs.readFileSync(full),
   }))
-  .then(async() => {
+  .then(async () => {
     const files = await readdir(path.dirname(full));
     const name = files.find((n) => n.normalize() === filename.normalize());
     await unlink(name);
