@@ -25,7 +25,6 @@ async function upload({ filename, file, secret, bucket, key, redirect }) {
     redirect,
   });
   const headers = {
-    'Host': `${bucket}.s3.amazonaws.com`,
     'Date': date,
     'Authorization': `AWS ${key}:${sig}`,
     'Content-Type': 'image/png',
@@ -34,7 +33,7 @@ async function upload({ filename, file, secret, bucket, key, redirect }) {
   if (redirect) {
     headers['x-amz-website-redirect-location'] = redirect;
   }
-  return request.put(`https://${bucket}.s3.amazonaws.com/${safeFilename}`, {
+  return request.put(`https://s3.amazonaws.com/${bucket}/${safeFilename}`, {
     agent: new https.Agent({ rejectUnauthorized: false }),
   })
     .set(headers)

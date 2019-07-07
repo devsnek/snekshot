@@ -18,9 +18,9 @@
   },
   "homepage": "https://github.com/devsnek/snekshot#readme",
   "dependencies": {
-    "copy-paste": "github:devsnek/node-copy-paste",
-    "node-notifier": "^5.1.2",
-    "snekfetch": "^3.2.6",
+    "clipboardy": "^2.1.0",
+    "node-notifier": "^5.4.0",
+    "snekfetch": "^4.0.4",
     "snekparse": "github:devsnek/snekparse"
   }
 }

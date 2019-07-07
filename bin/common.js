@@ -1,8 +1,8 @@
 'use strict';
 
 const path = require('path');
-const util = require('util');
-const copy = util.promisify(require('copy-paste').copy);
+const os = require('os');
+const clipboardy = require('clipboardy');
 const notifier = require('node-notifier');
 const snekv = require('snekparse')(process.argv);
 const upload = require('../');
@@ -14,7 +14,7 @@ function getOSStoragePath() {
       return process.env.APPDATA;
     case 'darwin':
     case 'linux':
-      return `${process.env.HOME}/.config`;
+      return `${os.homedir()}/.config`;
     default:
       return '.';
   }
@@ -45,10 +45,7 @@ function run({ filename, file, redirect }) {
         title: path.basename(module.parent.filename).split('.')[0],
         message: final,
       });
-      if (process.platform === 'darwin') {
-        return exec(`echo "${final}" | tr -d '\n' | LANG=en_US.UTF-8 pbcopy`);
-      }
-      return copy(final);
+      return clipboardy.write(final);
     })
     .catch((err) => {
       process.stderr.write(`${err.stack}\n`);
