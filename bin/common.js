@@ -53,6 +53,17 @@ function run({ filename, file, redirect }) {
     });
 }
 
+function exitWithError(e) {
+  notifier.notify({
+    title: 'Screencapture Failed!',
+    message: e.message,
+  });
+  process.exit(1);
+}
+
+process.on('unhandledRejection', exitWithError);
+process.on('uncaughtException', exitWithError);
+
 module.exports = {
   makeName: config.makeName || (() => Date.now().toString()),
   getOSStoragePath,
