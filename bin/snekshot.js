@@ -21,7 +21,7 @@ function getScreenshotCommand() {
     case 'darwin':
       return 'screencapture -i';
     case 'linux':
-      return 'scrot --select';
+      return 'maim -s';
     default:
       throw new Error('unsupported platform');
   }
