@@ -1,8 +1,7 @@
 'use strict';
 
-const https = require('https');
+const fetch = require('node-fetch');
 const crypto = require('crypto');
-const request = require('snekfetch');
 const exec = require('./exec');
 
 function signature({ contentType, date, bucket, safeFilename, secret, redirect }) {
@@ -33,12 +32,20 @@ async function upload({ filename, file, secret, bucket, key, redirect }) {
   if (redirect) {
     headers['x-amz-website-redirect-location'] = redirect;
   }
-  return request.put(`https://s3.amazonaws.com/${bucket}/${safeFilename}`, {
-    agent: new https.Agent({ rejectUnauthorized: false }),
+  return fetch(`https://s3.amazonaws.com/${bucket}/${safeFilename}`, {
+    method: 'PUT',
+    headers,
+    body: file,
   })
-    .set(headers)
-    .send(file)
-    .then((r) => r.body);
+    .then(async (r) => {
+      const body = await r.text();
+      if (!r.ok) {
+        const e = new Error(r.status);
+        e.body = body;
+        throw e;
+      }
+      return body;
+    });
 }
 
 module.exports = upload;

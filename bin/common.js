@@ -5,7 +5,7 @@ const os = require('os');
 const clipboardy = require('clipboardy');
 const notifier = require('node-notifier');
 const snekv = require('snekparse')(process.argv);
-const upload = require('../');
+const upload = require('..');
 const exec = require('../exec');
 
 function getOSStoragePath() {
@@ -46,14 +46,11 @@ function run({ filename, file, redirect }) {
         message: final,
       });
       return clipboardy.write(final);
-    })
-    .catch((err) => {
-      process.stderr.write(`${err.stack}\n`);
-      process.exit(1);
     });
 }
 
 function exitWithError(e) {
+  console.error(e);
   notifier.notify({
     title: 'Screencapture Failed!',
     message: e.message,
