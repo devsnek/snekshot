@@ -21,6 +21,9 @@ function getScreenshotCommand() {
     case 'darwin':
       return 'screencapture -i';
     case 'linux':
+      if (process.env['XDG_SESSION_TYPE'] === 'wayland') {
+        return 'grimshot save anything';
+      }
       return 'scrot -fs';
     default:
       throw new Error('unsupported platform');

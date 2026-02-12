@@ -45,6 +45,11 @@ function run({ filename, file, redirect }) {
         title: path.basename(module.parent.filename).split('.')[0],
         message: final,
       });
+
+      if (process.env['XDG_SESSION_TYPE'] === 'wayland') {
+        return exec(`wl-copy "${final}"`);
+      }
+
       return clipboardy.write(final);
     });
 }
